@@ -1,0 +1,77 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="editorpanel.css" />
+
+	<script src="zepto1.0rc1.js"></script>
+	<script src="NativeFileSupportShim.js"></script>
+	<script src="Logger.js"></script>
+	<script src="RecentUpdateHandler.js"></script>
+	<script src="ResourceChecker.js"></script>
+	<script>
+		$.get('http://www.atlassian.com', function(data){
+			var x = 0;
+		});
+		$(document).ready(function(){
+			
+			var typeSelect = document.getElementById('project-type');
+			
+			backgroundMsgSupport.getProjectTypes(function(projectTypes){
+				for (var i = 0; i < projectTypes.length; ++i) {
+					var projectType = projectTypes[i];
+					typeSelect.add(new Option(projectType.name, i));
+				}
+			});
+			$(typeSelect).on('change', function(e){
+				var index = typeSelect.selectedIndex;
+				var projectType = projectTypes[index];
+				if (projectType.locationType = 'local'){
+					var fileSelect = document.getElementById('file-select');
+					fileSelect.style.display = '';
+					
+					var $fileSelect = $(fileSelect);
+					$fileSelect.off('file-change');
+					$fileSelect.on('file-change', function(e, filePath){
+						requestFs(function(fs){
+							fs.root.getDirectory(filePath,{create:false}, function(dir){
+								projectType.load(dir);
+							});
+						});
+					});
+				}
+			});
+			$('#native-browse').on('click', function(e){
+				var index = typeSelect.selectedIndex;
+				backgroundMsgSupport.launchFileSelect(index, function(result){
+					if (result.path && result.path.length){
+						$('#local-file-path').text(result.path);
+						if (result.error){
+							logError(result.error);
+						}
+						else{
+							checkResources();
+							registerNavListener();
+							backgroundMsgSupport.watchDirectory(result.path, function(){});
+						}
+					}
+				});
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="project-select-form">
+		<p>
+			<fieldset>
+				<label>Project Type:</label>
+				<select id="project-type"></select>
+			</fieldset>
+		</p>
+		<p id="file-select" style="display:none">
+			<fieldset>
+				<label>Select Root Directory</label><label id="local-file-path"></label>
+				<button id="native-browse">Browse</button>
+			</fieldset>
+		</p>
+	</div>
+</body>
+</html>

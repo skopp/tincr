@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Background Page</title>
+    	<script>
+    		ProjectTypes = [];
+    		var projectsByTab= {};
+    		var watchersByTab={};
+    	</script>
+    	<script src="file_utils.js"></script>
+		<script src="AtlassianPluginProject.js"></script>
+		<script src="zepto1.0rc1.js"></script>
+		<script src="RecentUpdateHandler.js"></script>
+		<script src="FileWatcher.js"></script>
+    	<embed type="application/x-npapifileioforchrome" id="pluginId" style="position:absolute; top:0px;left:-10000px;width:0px;height:0px;">
+		<script>
+		  window.nativeFileSupport = document.getElementById("pluginId");
+		</script>
+		<script src="FauxFilesystem.js"></script>
+		<script>
+		  
+		  chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+		  		var currentProject = projectsByTab[sender.tab.id];
+				if (request.key == 'ProjectTypes'){
+					//var cleanResponse = [];
+					//for (var i = 0; i < ProjectTypes.length){
+					//	cleanResponse.push({name: ProjectTypes[i].name, locationType: ProjectTypes[i].locationType});
+					//}
+					sendResponse(ProjectTypes);
+				}
+				else if (request.key == 'launchFileSelect')
+				{
+					nativeFileSupport.launchFileSelect(function(path){
+						if (path && path.length){
+							var projectType = ProjectTypes[request.index];
+							window.requestFileSystem(window.PERMANENT, 5*1024*1024*1024, function(fs){
+								fs.root.getDirectory(path, {create:false}, function(dir){
+									projectType.createProject(dir,function(project, error){
+										currentProject = project;
+										projectsByTab[sender.tab.id] = currentProject;
+										sendResponse({path:path, error:error});
+									});
+								});
+							});
+						}
+					});
+				}
+				else if (request.key == 'checkResources'){
+					var urls = request.resources;
+					var retVal = [];
+					if (currentProject){
+						for (var i = 0; i < urls.length; i++){
+							if (urls[i].type == 'script' || urls[i].type == 'stylesheet'){
+								retVal.push(currentProject.isProjectUrl(urls[i].url));
+							}
+							else{
+								retVal.push(false);
+							}
+						}
+					}
+					sendResponse(retVal);
+				}
+				else if (request.key == 'checkResourceContent'){
+					var resources = request.content;
+					if (currentProject){
+						currentProject.matchContents(request.url, request.content, function(success, msg){
+							sendResponse({success:success, msg:msg});
+						});
+					}
+				}
+				else if (request.key == 'updateResource'){
+					var currentWatcher = watchersByTab[sender.tab.id];
+					currentProject.commitResource(request.url, request.content, currentWatcher,function(){
+						sendResponse();
+					});
+				}
+				else if (request.key == 'pageChanged'){
+					currentProject.resetUrls()
+					sendResponse();
+				}
+				else if (request.key == 'watchDirectory'){
+					if (!watchersByTab[sender.tab.id]){
+						watchersByTab[sender.tab.id] = new FileWatcher(sender.tab.id, currentProject, request.path);
+					}
+				}
+				else{
+					sendResponse({});
+				}
+				
+		  });
+		  
+		  chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+		  		if (projectsByTab[tabId])
+		  			delete projectsByTab[tabId];
+		  			
+		  		var watcher = watchersByTab[tabId];
+		  		if (watcher){
+		  			watcher.stopWatching();
+		  			delete watchersByTab[tabId];	
+		  		}
+		  });
+		</script>
+
+  </head>
+  <body>
+  </body>
+</html>

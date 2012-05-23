@@ -1,0 +1,1 @@
+chrome.devtools.panels.create('Local Project', 'icon.png', 'editorpanel.html');
