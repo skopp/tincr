@@ -3,9 +3,9 @@
   "description": "Plugin to allow editing of local files from Chrome developer tools",
   "version": "1",
   "devtools_page": "devtools.html",
-  "permissions" : ["http://*/"],
   "background_page": "background.html",
+  "permissions": ["http://*/", "https://*/"],
   "plugins": [
-    { "path": "NPAPIFileIOforChrome.plugin", "public": false }
+    { "path": "npNPAPIFileIOforChrome.so", "public": false }
   ]
 }
