@@ -27,7 +27,7 @@ AtlassianPluginProject.prototype = {
 				for (var i = 0; i < resources.length; i++){
 					var attributes = resources[i].attributes;
 					var location = attributes.location.value;
-					if (location.indexOf('.js') != location.length - 3 && location.indexOf('.css') != location.length - 4){
+					if (location.indexOf('.js') != location.length - 3 && location.indexOf('.css') != location.length - 4 && location.indexOf('.soy') != location.length - 4){
 						continue;
 					}
 					var moduleKey = resources[i].parentNode.attributes.key.value;

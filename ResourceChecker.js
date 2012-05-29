@@ -44,6 +44,10 @@ var registerNavListener = function(){
 				checkResources();
 			});
 		});
+		chrome.devtools.inspectedWindow.onResourceAdded.addListener(function(resource){
+			console.log('resource added');
+			matchResourcesWithProject([resource]);
+		});
 	}
 	navListenerRegistered = true;
 }

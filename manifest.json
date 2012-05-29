@@ -6,6 +6,6 @@
   "background_page": "background.html",
   "permissions": ["http://*/", "https://*/"],
   "plugins": [
-    { "path": "npNPAPIFileIOforChrome.so", "public": false }
+    { "path": "NPAPIFileIOforChrome.plugin", "public": false }
   ]
 }
