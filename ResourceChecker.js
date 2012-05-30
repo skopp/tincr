@@ -39,13 +39,12 @@ var checkResources = function(callback){
 var registerNavListener = function(){
 	if (!navListenerRegistered){
 		chrome.devtools.network.onNavigated.addListener(function(){
-			console.log('page navigated');
 			backgroundMsgSupport.pageChanged(function(){
 				checkResources();
 			});
 		});
 		chrome.devtools.inspectedWindow.onResourceAdded.addListener(function(resource){
-			console.log('resource added');
+			resourceCache.push(resource);
 			matchResourcesWithProject([resource]);
 		});
 	}
