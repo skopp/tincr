@@ -57,17 +57,22 @@ chrome.devtools.inspectedWindow.onResourceContentCommitted.addListener(function(
 });
 
 var fileChangeListener = function(data){
-	var setContent = function(resource, data){
+	// resource content seems to be naively cached. No way to get the most recent content without
+	// storing it ourselves. Does it matter that much?
+	/*var setContent = function(resource, data){
 		resource.getContent(function(content){
 			if (data.content != content){
 				recentUpdateHandler.addRecentUpdate(resource.url);
 				resource.setContent(data.content, true);
 			}
 		});
-	};
+	};*/
 	for (var i = 0; i < resourceCache.length; i++){
 		if (resourceCache[i].url === data.url){
-			setContent(resourceCache[i], data);
+			//setContent(resourceCache[i], data);
+			var resource = resourceCache[i];
+			recentUpdateHandler.addRecentUpdate(resource.url);
+			resource.setContent(data.content, true);
 		}
 	}
 };

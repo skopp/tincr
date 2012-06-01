@@ -7,6 +7,7 @@ var FileWatcher = function(tabId, project, path){
 
 FileWatcher.prototype = {
 	fileChanged : function(path){
+		//console.log(path); 
 		if (this.isMyChange(path)){
 			return;
 		}
