@@ -1,6 +1,5 @@
 AtlassianPluginProject = function(){
 	this.resourceMap = {};
-	this.matchedResourceMap = {};
 	this.matchedFileMap = {};
 	this.locationType = 'local';
 };
@@ -40,45 +39,20 @@ AtlassianPluginProject.prototype = {
 			}); 
 		});
 	},
-	isProjectUrl: function (url){
+	filePathForUrl: function (url){
 		var resourceMap = this.resourceMap;
 		for (var end in resourceMap){
 			var idx = url.indexOf(end);
 			if (idx != -1 && idx == url.length - end.length){
 				var file = resourceMap[end];
-				this.matchedResourceMap[url] = file;
-				this.matchedFileMap[file.root.fullPath + file.path] = url;
-				return true;
+				var filePath = file.root.fullPath + file.path;
+				this.matchedFileMap[filePath] = url;
+				return filePath;
 			}
 		}
-		return false;
+		return null;
 	},
-	matchContents: function(url, content, callback){
-		var matchedResourceMap = this.matchedResourceMap;
-		var file = matchedResourceMap[url];
-		if (file){
-			Gito.FileUtils.readFile(file.root, file.path, 'Text', function(localContent){
-				if (content != localContent){
-					callback(false, 'Content for url ' + url + ' doesn\'t match local file ' + file.root.fullPath + file.path); 
-					delete matchedResourceMap[url];
-				}
-				else{
-					callback(true, 'Content for url ' + url + ' matches local file ' + file.root.fullPath + file.path);
-				}
-			});
-		}
-	},
-	commitResource : function(url, content, watcher, callback){
-		var localFile = this.matchedResourceMap[url];
-		if (localFile){
-			watcher.addChangedByMe(localFile.root.fullPath + localFile.path);
-			Gito.FileUtils.mkfile(localFile.root, localFile.path, content, callback);
-		}
-		else{
-			callback();
-		}
-	},
-	urlsForPath : function(path){
+	urlsForFilePath : function(path){
 		var single = this.matchedFileMap[path];
 		if (single){
 			return [single];
@@ -86,7 +60,6 @@ AtlassianPluginProject.prototype = {
 		return [];
 	},
 	resetUrls : function(){
-		this.matchedResourceMap = {};
 		this.matchedFileMap = {};
 	}
 }

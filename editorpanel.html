@@ -8,11 +8,8 @@
 	<script src="RecentUpdateHandler.js"></script>
 	<script src="ResourceChecker.js"></script>
 	<script>
-		$.get('http://www.atlassian.com', function(data){
-			var x = 0;
-		});
 		$(document).ready(function(){
-			
+			console.log('ready');
 			var typeSelect = document.getElementById('project-type');
 			
 			backgroundMsgSupport.getProjectTypes(function(projectTypes){

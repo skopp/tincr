@@ -11,7 +11,7 @@ FileWatcher.prototype = {
 		if (this.isMyChange(path)){
 			return;
 		}
-		var urls = this.project.urlsForPath(path)
+		var urls = this.project.urlsForFilePath(path)
 		if (urls && urls.length){
 			var port = chrome.tabs.connect(this.tabId, {name: 'fileChange'});
 			var ran = Math.round(Math.random()*10000000);
