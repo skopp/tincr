@@ -20,3 +20,9 @@ FileUrlProject.prototype = {
 		this.projectUrls = {};
 	}
 }
+
+FileUrlProjectFactory = {
+	createProject : function(dir, callback){
+		callback(new FileUrlProject());
+	}
+}

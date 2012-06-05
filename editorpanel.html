@@ -5,11 +5,20 @@
 	<script src="zepto1.0rc1.js"></script>
 	<script src="BackgroundMsgSupport.js"></script>
 	<script src="Logger.js"></script>
-	<script src="RecentUpdateHandler.js"></script>
-	<script src="ResourceChecker.js"></script>
 	<script>
-		$(document).ready(function(){
-			console.log('ready');
+		
+		var checkProjectState = function(){
+			var projectState = window.devtoolsWindow.projectState,
+				disabled = 'false';
+			if (projectState.type == 'fileUrl'){
+				disabled = 'true';
+			}
+			$('#project-type').attr('disabled', disabled);
+			$('#native-browse').attr('disabled', disabled);
+		}
+		
+		var initUI = function(){
+			checkProjectState();
 			var typeSelect = document.getElementById('project-type');
 			
 			backgroundMsgSupport.getProjectTypes(function(projectTypes){
@@ -24,16 +33,6 @@
 				if (projectType.locationType = 'local'){
 					var fileSelect = document.getElementById('file-select');
 					fileSelect.style.display = '';
-					
-					var $fileSelect = $(fileSelect);
-					$fileSelect.off('file-change');
-					$fileSelect.on('file-change', function(e, filePath){
-						requestFs(function(fs){
-							fs.root.getDirectory(filePath,{create:false}, function(dir){
-								projectType.load(dir);
-							});
-						});
-					});
 				}
 			});
 			$('#native-browse').on('click', function(e){
@@ -45,14 +44,13 @@
 							logError(result.error);
 						}
 						else{
-							checkResources();
-							registerNavListener();
-							backgroundMsgSupport.watchDirectory(result.path, function(){});
+							var projectType = projectTypes[index];
+							window.devtoolsWindow.loadProject(projectType.key, result.path);
 						}
 					}
 				});
 			});
-		});
+		};
 	</script>
 </head>
 <body>

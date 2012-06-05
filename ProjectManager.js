@@ -4,22 +4,27 @@ ProjectManager = function(){
 }
 
 ProjectManager.prototype = {
+    _initProject : function(tabId, path, projectType, sendResponse){
+    	var self = this;
+    	var projectsByTab = this.projectsByTab;
+    	this.cleanUp(tabId);
+    	window.requestFileSystem(window.PERMANENT, 5*1024*1024*1024, function(fs){
+			fs.root.getDirectory(path, {create:false}, function(dir){
+				projectType.createProject(dir,function(project, error){
+					self.fsRoot = fs.root;
+					project.matchedResourceMap = {};
+					projectsByTab[tabId] = project;
+					sendResponse({path:path, error:error});
+				});
+			});
+		});
+    },
 	launchFileSelect : function(tabId, typeIndex, sendResponse){
-		var projectsByTab = this.projectsByTab;
 		var self = this;
 		nativeFileSupport.launchFileSelect(function(path){
 			if (path && path.length){
 				var projectType = ProjectTypes[typeIndex];
-				window.requestFileSystem(window.PERMANENT, 5*1024*1024*1024, function(fs){
-					fs.root.getDirectory(path, {create:false}, function(dir){
-						projectType.createProject(dir,function(project, error){
-							self.fsRoot = fs.root;
-							project.matchedResourceMap = {};
-							projectsByTab[tabId] = project;
-							sendResponse({path:path, error:error});
-						});
-					});
-				});
+				self._initProject(tabId, path, projectType, sendResponse);
 			}
 		});
 	},
@@ -76,7 +81,19 @@ ProjectManager.prototype = {
 			sendResponse();
 		}
 	},
-	
+	loadProject : function(tabId, projectTypeKey, path, sendResponse){
+		if (projectTypeKey == 'fileUrl'){
+			this._initProject(tabId, path, FileUrlProjectFactory, sendResponse);
+		}
+		else{		
+			for (var i = 0; i < ProjectTypes.length; i++){
+				if (ProjectTypes[i].key === projectTypeKey){
+					this._initProject(tabId, path, ProjectTypes[i], sendResponse);
+					break;
+				}
+			}
+		}
+	},
 	resetProject : function(tabId, sendResponse){
 		var currentProject = this.projectsByTab[tabId];
 		currentProject.resetUrls();

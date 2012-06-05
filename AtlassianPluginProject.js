@@ -66,6 +66,7 @@ AtlassianPluginProject.prototype = {
 ProjectTypes.push(
     {
 		name: 'Atlassian Plugin',
+		key: 'atlassian.plugin',
 		locationType : 'local',
 		createProject : function(root, callback){
 			var project = new AtlassianPluginProject();

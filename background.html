@@ -9,6 +9,7 @@
     	</script>
     	<script src="file_utils.js"></script>
 		<script src="AtlassianPluginProject.js"></script>
+		<script src="FileUrlProject.js"></script>
 		<script src="zepto1.0rc1.js"></script>
 		<script src="RecentUpdateHandler.js"></script>
 		<script src="FileWatcher.js"></script>
@@ -46,6 +47,9 @@
 				}
 				else if (request.key == 'watchDirectory'){
 					projectManager.watchDirectory(sender.tab.id, request.path);
+				}
+				else if (request.key == 'loadProject'){
+					projectManager.loadProject(sender.tab.id, request.type, request.path, sendResponse);
 				}
 				else{
 					sendResponse({});

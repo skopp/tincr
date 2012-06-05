@@ -32,5 +32,10 @@ var backgroundMsgSupport = {
 		chrome.extension.sendRequest({key: 'watchDirectory', path : fullPath}, function(response){
 			callback(response);
 		});
+	},
+	loadProject : function(type, path, callback){
+		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path}, function(response){
+			callback(response);
+		});
 	}
 }
