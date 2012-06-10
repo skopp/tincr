@@ -63,7 +63,7 @@ ProjectManager.prototype = {
 					else{
 						sendResponse({success: true, msg: 'Content for url ' + url + ' matches local file ' + path });
 					}
-				});
+				}, function(){});
 			}
 		}
 	},
@@ -103,7 +103,7 @@ ProjectManager.prototype = {
 	watchDirectory : function(tabId, path){
 		if (!this.watchersByTab[tabId]){
 			var currentProject = this.projectsByTab[tabId];
-			this.watchersByTab[tabId] = new FileWatcher(tabId, currentProject, path);
+			this.watchersByTab[tabId] = new FileWatcher(tabId, currentProject, path, this.fsRoot);
 		}
 	},
 	cleanUp : function(tabId){

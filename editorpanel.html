@@ -7,25 +7,41 @@
 	<script src="Logger.js"></script>
 	<script>
 		
+		var projectTypes;
+		
 		var checkProjectState = function(){
-			var projectState = window.devtoolsWindow.projectState,
-				disabled = 'false';
+			var projectState = window.devtoolsWindow.projectState;
+				
 			if (projectState.type == 'fileUrl'){
-				disabled = 'true';
+				$('#project-type').attr('disabled', 'true');
+				$('#native-browse').attr('disabled', 'true');
 			}
-			$('#project-type').attr('disabled', disabled);
-			$('#native-browse').attr('disabled', disabled);
+			else if (projectState.type){
+				var typeSelect = document.getElementById('project-type');
+				$('#project-type').removeAttr('disabled');
+				$('#native-browse').removeAttr('disabled');
+				
+				for (var i = 0; i < projectTypes.length; i++){
+					if (projectTypes[i].key === projectState.type){
+						typeSelect.selectedIndex = i;
+						break;
+					}
+				}
+				$('#local-file-path').text(projectState.path);
+			}
+			
 		}
 		
 		var initUI = function(){
-			checkProjectState();
 			var typeSelect = document.getElementById('project-type');
 			
-			backgroundMsgSupport.getProjectTypes(function(projectTypes){
+			backgroundMsgSupport.getProjectTypes(function(types){
+				projectTypes = types;
 				for (var i = 0; i < projectTypes.length; ++i) {
 					var projectType = projectTypes[i];
 					typeSelect.add(new Option(projectType.name, i));
 				}
+				checkProjectState();
 			});
 			$(typeSelect).on('change', function(e){
 				var index = typeSelect.selectedIndex;
