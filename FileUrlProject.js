@@ -22,7 +22,7 @@ FileUrlProject.prototype = {
 }
 
 FileUrlProjectFactory = {
-	createProject : function(dir, callback){
+	createProject : function(dir, url, callback){
 		callback(new FileUrlProject());
 	}
 }

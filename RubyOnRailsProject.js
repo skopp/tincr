@@ -40,7 +40,7 @@ ProjectTypes.push(
 		name: 'Ruby on Rails (3.1 or higher)',
 		key: 'ror3.1',
 		locationType : 'local',
-		createProject : function(root, callback){
+		createProject : function(root, url, callback){
 			routes = [
 				{from: /\/assets\/(.+\.js)/,
 				 to: slash + ['app','assets','javascripts'].join(slash) + slash + '$1'},
@@ -52,65 +52,3 @@ ProjectTypes.push(
 		} 
     }
 );
-
-/*var RubyOnRails31Project = function(){
-	this.processedMap = {};	
-}
-
-RubyOnRails31Project.prototype = {
-    _loadResourceMappings : function(dir, prefix, callback){
-		Gito.FileUtils.ls(dir, function(jsEntries){
-			for (var i = 0; i < jsEntries.length; i++){
-				var jsEntry = jsEntries[i];
-				var jsIdx = jsEntry.name.indexOf('.js.');
-				if (jsIdx != -1){
-					jsEntry
-				}
-			}
-		});
-	},
-	load : function(root, callback){
-		this.root = root;
-		this.assetRoot = root.fullPath + slash + ['app','assets'].join(slash) + slash;
-		callback();
-	},
-	filePathForUrl : function(url, type){
-		var pieces = url.split('/');
-		for (var min = 0; min < pieces.length; min++){
-			if (pieces[min] == 'assets'){
-				break;
-			}
-		}
-		var last = pieces.length - 1
-		if (min >= last){
-			return null;
-		}
-		
-		var partialPath = pieces.slice(min).join('/');
-		if (type == 'script'){
-			partialPath = 'javascripts/' + partialPath;
-		}
-		else{
-			partialPath = 'stylesheets/' + partialPath; 
-		}
-		
-		return this.root.fullPath + '/assets/' + partialPath
-	},
-	urlsForFilePath : function(path){
-		var assetRoot = this.assetRoot;
-		if (path.indexOf(assetRoot) == 0){
-			var partialPath = path.substring(assetRoot.length);
-			if (partialPath.indexOf('javascripts') == 0){
-				
-			}
-			else if (partialPath.indexOf('stylesheets') == 0){
-				
-			}
-		}
-		return [];
-	},
-	resetUrls : function(){
-		this.projectUrls = {};
-	}
-}*/
-

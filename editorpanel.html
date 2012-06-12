@@ -53,7 +53,7 @@
 			});
 			$('#native-browse').on('click', function(e){
 				var index = typeSelect.selectedIndex;
-				backgroundMsgSupport.launchFileSelect(index, function(result){
+				backgroundMsgSupport.launchFileSelect(index, window.devtoolsWindow.inspectedLocation.href, function(result){
 					if (result.path && result.path.length){
 						$('#local-file-path').text(result.path);
 						if (result.error){
@@ -79,7 +79,7 @@
 		</p>
 		<p id="file-select" style="display:none">
 			<fieldset>
-				<label>Select Root Directory</label><label id="local-file-path"></label>
+				<label>Root Directory</label><label id="local-file-path"></label>
 				<button id="native-browse">Browse</button>
 			</fieldset>
 		</p>

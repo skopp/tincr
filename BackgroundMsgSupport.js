@@ -1,7 +1,7 @@
 
 var backgroundMsgSupport = {
-	launchFileSelect : function(index, callback){
-		chrome.extension.sendRequest({key: 'launchFileSelect', index: index}, function(response){
+	launchFileSelect : function(index, url,  callback){
+		chrome.extension.sendRequest({key: 'launchFileSelect', index: index, url: url}, function(response){
 			callback(response);
 		});
 	},
@@ -33,8 +33,8 @@ var backgroundMsgSupport = {
 			callback(response);
 		});
 	},
-	loadProject : function(type, path, callback){
-		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path}, function(response){
+	loadProject : function(type, path, url, callback){
+		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path, url: url}, function(response){
 			callback(response);
 		});
 	}

@@ -1,0 +1,16 @@
+fieldset{
+    border:none;
+}
+
+#project-select-form{
+    border: 1px solid black;
+    font-family: "Lucida Grande", sans-serif;
+    font-size: 75%
+}
+
+#local-file-path{
+    margin-left:15px;
+    font-size: 90%;
+    border: 2px inset;
+    padding: 2px;
+}

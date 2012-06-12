@@ -68,9 +68,9 @@ ProjectTypes.push(
 		name: 'Atlassian Plugin',
 		key: 'atlassian.plugin',
 		locationType : 'local',
-		createProject : function(root, callback){
+		createProject : function(root, url, callback){
 			var project = new AtlassianPluginProject();
-			project.load(root, function(error){
+			project.load(root, url, function(error){
 				callback(project, error);
 			});
 		} 
