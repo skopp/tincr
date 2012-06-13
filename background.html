@@ -48,17 +48,22 @@
 					projectManager.resetProject(sender.tab.id, sendResponse);
 				}
 				else if (request.key == 'watchDirectory'){
-					projectManager.watchDirectory(sender.tab.id, request.path);
+					projectManager.watchDirectory(sender.tab.id, request.path, sendResponse);
 				}
 				else if (request.key == 'loadProject'){
 					projectManager.loadProject(sender.tab.id, request.type, request.path, request.url, sendResponse);
+				}
+				else if (request.key == 'registerWatch'){
+					projectManager.registerWatch(sender.tab.id, sendResponse);
 				}
 				else{
 					sendResponse({});
 				}
 				
 		  });
-		  
+		  chrome.extension.onConnect.addListener(function(port){
+		  	projectManager.watchDirectory(port);
+		  });
 		  chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 		  		projectManager.cleanUp(tabId);
 		  });

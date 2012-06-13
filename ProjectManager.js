@@ -101,12 +101,16 @@ ProjectManager.prototype = {
 		currentProject.matchedResourceMap = {};
 		sendResponse();
 	},
-	watchDirectory : function(tabId, path){
+	watchDirectory : function(port){
+		var tabId = port.sender.tab.id;
+		var path = port.name;
 		if (!this.watchersByTab[tabId]){
 			var currentProject = this.projectsByTab[tabId];
-			this.watchersByTab[tabId] = new FileWatcher(tabId, currentProject, path, this.fsRoot);
+			this.watchersByTab[tabId] = new FileWatcher(port, currentProject, path, this.fsRoot);
+			//sendResponse();
 		}
 	},
+	
 	cleanUp : function(tabId){
 		if (this.projectsByTab[tabId])
 			delete this.projectsByTab[tabId];

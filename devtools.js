@@ -1,11 +1,17 @@
 // Most of the logic happens in devtools.html since it loads right away
 var projectState = {};
 var inspectedLocation;
+var watchPort;
 
 var loadProject = function(type, path){
 	checkResources();
 	registerNavListener();
-	backgroundMsgSupport.watchDirectory(path, function(){});
+	
+	if (watchPort){
+		watchPort.disconnect();
+	}
+	watchPort = chrome.extension.connect({name:path});
+	watchPort.onMessage.addListener(fileChangeListener);
 	
 	projectState = {type: type, path: path};
 	if (type != 'fileUrl'){

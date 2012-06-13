@@ -37,5 +37,8 @@ var backgroundMsgSupport = {
 		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path, url: url}, function(response){
 			callback(response);
 		});
+	},
+	registerWatch : function(callback){
+		chrome.extension.sendRequest({key: 'registerWatch'}, callback);
 	}
 }

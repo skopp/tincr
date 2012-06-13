@@ -1,4 +1,6 @@
-var FileWatcher = function(tabId, project, path, fsRoot){
+var FileWatcher = function(port, project, path, fsRoot){
+	this.port = port;
+	var tabId = port.sender.tab.id;
 	this.tabId = tabId;
 	this.project = project;
 	this.recentUpdateHandler = new RecentUpdateHandler(2000);
@@ -14,12 +16,12 @@ FileWatcher.prototype = {
 		}
 		var urls = this.project.urlsForFilePath(path)
 		if (urls && urls.length){
-			var port = chrome.tabs.connect(this.tabId, {name: 'fileChange'});
+			//var port = chrome.tabs.connect(this.tabId, {name: 'fileChange'});
 			var ran = Math.round(Math.random()*10000000);
 			var self = this;
 			urls.asyncEach(function(url, done){
 				var sendContentToDevtools = function(data){
-					port.postMessage({url: url, content: data});
+					self.port.postMessage({url: url, content: data});
 					done();
 				}
 				
@@ -35,7 +37,7 @@ FileWatcher.prototype = {
 				}
 			}, 
 			function(){
-				port.disconnect();
+				//port.disconnect();
 			});
 		}
 	},

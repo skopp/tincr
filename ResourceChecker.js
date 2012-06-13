@@ -76,8 +76,8 @@ var fileChangeListener = function(data){
 		}
 	}
 };
-chrome.extension.onConnect.addListener(function(port) {
+/*chrome.extension.onConnect.addListener(function(port) {
 	if (port.name == 'fileChange'){
 		port.onMessage.addListener(fileChangeListener);
 	}
-});
+});*/
