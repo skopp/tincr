@@ -26,7 +26,11 @@ FileWatcher.prototype = {
 				}
 				
 				if (url.indexOf('file://') == 0){
-					Gito.FileUtils.readFile(self.fsRoot, url.substring(7), 'Text', sendContentToDevtools, done);
+					var startIdx = 7;
+					if (url.indexOf('localhost') == 7){
+						startIdx = 16;
+					}
+					Gito.FileUtils.readFile(self.fsRoot, url.substring(startIdx), 'Text', sendContentToDevtools, done);
 				}
 				else{
 					$.ajax({type: 'GET',
