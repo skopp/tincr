@@ -17,6 +17,9 @@ if (nativeFileSupport){
 				path = parent.name + (path.charAt(0) == '/' ? '' : '/') + path;
 				parent = parent.parent;
 			}
+			if (navigator.platform == 'Win32' && path.charAt(0) == '/'){
+				path = path.substring(1);
+			}
 			return path;
 		},
 		remove : function(success, error){
