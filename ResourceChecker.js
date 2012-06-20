@@ -11,6 +11,9 @@ var matchResourcesWithProject = function(resources){
 				if (data.success){
 					logMessage(data.msg);
 					matchedUrls[resource.url] = true;
+					if (data.content){
+						doResourceUpdate(resource, data.content);
+					}
 				}
 				else{
 					logError(data.msg);
@@ -55,7 +58,10 @@ chrome.devtools.inspectedWindow.onResourceContentCommitted.addListener(function(
 		backgroundMsgSupport.updateResource(resource.url, content);
 	}
 });
-
+var doResourceUpdate = function(resource, newContent){
+	recentUpdateHandler.addRecentUpdate(resource.url);
+	resource.setContent(newContent, true);
+};
 var fileChangeListener = function(data){
 	// resource content seems to be naively cached. No way to get the most recent content without
 	// storing it ourselves. Does it matter that much?
@@ -71,8 +77,7 @@ var fileChangeListener = function(data){
 		if (resourceCache[i].url === data.url){
 			//setContent(resourceCache[i], data);
 			var resource = resourceCache[i];
-			recentUpdateHandler.addRecentUpdate(resource.url);
-			resource.setContent(data.content, true);
+			doResourceUpdate(resource, data.content);
 		}
 	}
 };

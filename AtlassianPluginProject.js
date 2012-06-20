@@ -4,7 +4,7 @@ AtlassianPluginProject = function(){
 	this.locationType = 'local';
 };
 AtlassianPluginProject.prototype = {
-	load : function(root, callback){
+	load : function(root, url, callback){
 		var resourceMap = this.resourceMap;
 		Gito.FileUtils.readFile(root, 'pom.xml', 'Text', function(pomText){
 			var p = new DOMParser();

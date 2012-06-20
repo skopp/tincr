@@ -34,7 +34,7 @@ FileWatcher.prototype = {
 				}
 				else{
 					$.ajax({type: 'GET',
-							url: url + '?r=' + ran,
+							url: url + (url.indexOf('?') != -1 ? '&' : '?') + 'r=' + ran,
 							dataType: 'text',
 							success: sendContentToDevtools,
 							error: done});

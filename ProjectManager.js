@@ -58,8 +58,27 @@ ProjectManager.prototype = {
 			if (path){
 				Gito.FileUtils.readFile(this.fsRoot, path, 'Text', function(localContent){
 					if (content != localContent){
-						sendResponse({success: false, msg: 'Content for url ' + url + ' doesn\'t match local file ' + path}); 
-						delete currentProject.matchedResourceMap[url];
+					
+						var ran = Math.round(Math.random()*10000000);
+						var handleError = function(){
+							sendResponse({success: false, msg: 'Content for url ' + url + ' doesn\'t match local file ' + path});
+							delete currentProject.matchedResourceMap[url];
+						}
+						
+						var handleContent = function(newContent){
+							if (localContent != newContent){
+								handleError();
+							}else{
+								sendResponse({success: true, msg: 'Content for url ' + url + ' was reloaded and it matches local file ' + path, content: newContent });
+							}
+						}
+						
+						$.ajax({type: 'GET',
+							url: url + (url.indexOf('?') != -1 ? '&' : '?') + 'r=' + ran,
+							dataType: 'text',
+							success: handleContent,
+							error: handleError}); 
+						
 					}
 					else{
 						sendResponse({success: true, msg: 'Content for url ' + url + ' matches local file ' + path });
