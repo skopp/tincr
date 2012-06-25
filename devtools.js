@@ -47,7 +47,7 @@ var checkLocation = function(){
 			}
 		}
 		if (type && path && projectState.path != path){
-			backgroundMsgSupport.loadProject(type, path, inspectedLocation.href, function(){
+			backgroundMsgSupport.loadProject(type, path, inspectedLocation.origin, function(){
 				loadProject(type, path);
 			});
 		}

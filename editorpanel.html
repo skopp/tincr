@@ -53,7 +53,7 @@
 			});
 			$('#native-browse').on('click', function(e){
 				var index = typeSelect.selectedIndex;
-				backgroundMsgSupport.launchFileSelect(index, window.devtoolsWindow.inspectedLocation.href, function(result){
+				backgroundMsgSupport.launchFileSelect(index, window.devtoolsWindow.inspectedLocation.origin, function(result){
 					if (result.path && result.path.length){
 						$('#local-file-path').text(result.path);
 						if (result.error){

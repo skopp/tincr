@@ -1,39 +1,3 @@
-var slash = navigator.platform.indexOf('Win') == 0 ? '\\' : '/';
-
-var RubyOnRails31Project = function(root, routes){
-	this.routes = routes;
-	this.rootPath = root.fullPath;
-	//used to strip off .coffee, .less, .scss, etc. off the end of a file name
-	this.stripRegex = /(\.js|\.css)\.[a-zA-Z]+$/
-	this.projectUrls = {};
-}
-
-RubyOnRails31Project.prototype = {
-	filePathForUrl : function(url){
-		var routes = this.routes;
-		for (var i = 0; i < routes.length; i++){
-			var match = url.match(routes[i].from);
-			if (match){
-				var partialPath = match[0].replace(routes[i].from, routes[i].to);
-				var path = this.rootPath + (partialPath.charAt(0) == '/' ? '' : '/') + partialPath;
-				this.projectUrls[path] = url;
-			}
-		}
-		return null;
-	},
-	
-	urlsForFilePath : function(path){
-		var strippedPath = path.replace(this.stripRegex, '$1');
-		var url = this.projectUrls[strippedPath];
-		if (url){
-			return [url];
-		}
-	 	return [];
-	},
-	resetUrls : function(){
-		this.projectUrls = {};
-	}
-}
 
 ProjectTypes.push(
     {
@@ -41,13 +5,35 @@ ProjectTypes.push(
 		key: 'ror3.1',
 		locationType : 'local',
 		createProject : function(root, url, callback){
-			routes = [
-				{from: /\/assets\/(.+\.js)/,
-				 to: slash + ['app','assets','javascripts'].join(slash) + slash + '$1'},
-				{from: /\/assets\/(.+\.css)/,
-				 to: slash + ['app','assets','stylesheets'].join(slash) + slash + '$1'}
-			];
-			var project = new RubyOnRails31Project(root, routes);
+			config = {
+					toFile : [
+						{from: '/assets/(.+\\.js)',
+						 to: '/app/assets/javascripts/$1'},
+						{from: '/assets/(.+\\.css)',
+						 to: '/app/assets/stylesheets/$1'}
+					],
+					fromFile : [
+						{from: '(\\\\|/)app\\1assets\\1(?:javascripts|stylesheets)\\1(.+\\.js|\\.css)(\\.[a-zA-Z]+)?$',
+						 to: '/assets/$2?body=1'}
+					]
+			};
+			
+			var project = new ConfigFileBasedProject(config, root, url);
+			var trailer = /\s*;\s*$/;
+			project.compare = function(remote,local){
+				if (remote != local){
+					// sprockets puts a semicolon and whitespace trailer on the end of js files. This tries to create 
+					// a comparison that ignores the trailer.
+					var idx = remote.indexOf(local);
+					if (idx == 0){
+						return remote.substring(local.length).search(trailer) == 0;
+					}
+				}
+				else{
+					return true;
+				}
+				return false;
+			}
 			callback(project);
 		} 
     }

@@ -13,6 +13,11 @@ ProjectManager.prototype = {
 				projectType.createProject(dir,url,function(project, error){
 					self.fsRoot = fs.root;
 					project.matchedResourceMap = {};
+					if (!project.compare){
+						project.compare = function(a,b){
+							return a === b;
+						}
+					}
 					projectsByTab[tabId] = project;
 					sendResponse({path:path, error:error});
 				});
@@ -57,7 +62,7 @@ ProjectManager.prototype = {
 			var path = currentProject.matchedResourceMap[url];
 			if (path){
 				Gito.FileUtils.readFile(this.fsRoot, path, 'Text', function(localContent){
-					if (content != localContent){
+					if (!currentProject.compare(content, localContent)){
 					
 						var ran = Math.round(Math.random()*10000000);
 						var handleError = function(){
@@ -66,7 +71,7 @@ ProjectManager.prototype = {
 						}
 						
 						var handleContent = function(newContent){
-							if (localContent != newContent){
+							if (!currentProject.compare(newContent,localContent)){
 								handleError();
 							}else{
 								sendResponse({success: true, msg: 'Content for url ' + url + ' was reloaded and it matches local file ' + path, content: newContent });
