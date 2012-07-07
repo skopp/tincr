@@ -13,7 +13,7 @@ ProjectTypes.push(
 						 to: '/app/assets/stylesheets/$1'}
 					],
 					fromFile : [
-						{from: '(\\\\|/)app\\1assets\\1(?:javascripts|stylesheets)\\1(.+\\.js|\\.css)(\\.[a-zA-Z]+)?$',
+						{from: '(\\\\|/)app\\1assets\\1(?:javascripts|stylesheets)\\1(.+(\\.js|\\.css))(\\.[a-zA-Z]+)?$',
 						 to: '/assets/$2?body=1'}
 					]
 			};

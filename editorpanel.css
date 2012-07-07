@@ -2,15 +2,34 @@ fieldset{
     border:none;
 }
 
-#project-select-form{
-    border: 1px solid black;
+#project-select-form form.aui{
     font-family: "Lucida Grande", sans-serif;
-    font-size: 75%
+    padding-left: 40px;
 }
-
+#native-browse{
+	margin:0px;
+}
 #local-file-path{
-    margin-left:15px;
     font-size: 90%;
     border: 2px inset;
-    padding: 2px;
+    vertical-align: middle;
+}
+
+#success-img{
+	padding-left:10px;
+	vertical-align: middle;
+	height: 16px;
+	width: 16px;
+}
+
+#error-img{
+	padding-left:10px;
+	vertical-align: middle;
+}
+
+#load-success{
+	color:green;
+}
+#load-error{
+	color:red;
 }

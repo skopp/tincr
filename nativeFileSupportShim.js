@@ -1,7 +1,7 @@
 
 var backgroundMsgSupport = {
-	launchFileSelect : function(index, url,  callback){
-		chrome.extension.sendRequest({key: 'launchFileSelect', index: index, url: url}, function(response){
+	launchFileSelect : function(index, callback){
+		chrome.extension.sendRequest({key: 'launchFileSelect', index: index}, function(response){
 			callback(response);
 		});
 	},
@@ -28,12 +28,13 @@ var backgroundMsgSupport = {
 	pageChanged : function(callback){
 		chrome.extension.sendRequest({key: 'pageChanged'}, callback);
 	},
-	
-	unwatchDirectory : function(callback){
-		chrome.extension.sendRequest({key: 'unwatchDirectory'}, callback); 
+	watchDirectory : function(fullPath, callback){
+		chrome.extension.sendRequest({key: 'watchDirectory', path : fullPath}, function(response){
+			callback(response);
+		});
 	},
-	loadProject : function(type, path, url, callback){
-		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path, url: url}, function(response){
+	loadProject : function(type, path, callback){
+		chrome.extension.sendRequest({key: 'loadProject', type: type, path: path}, function(response){
 			callback(response);
 		});
 	}

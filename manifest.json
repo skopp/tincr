@@ -1,11 +1,16 @@
 {
-  "name": "Devtools-Tincr",
-  "description": "Plugin to allow editing of local files from Chrome developer tools",
+  "name": "Tincr",
+  "description": "Extension to allow editing and fast reloading of local files from Chrome developer tools",
   "version": "1",
   "devtools_page": "devtools.html",
   "background_page": "background.html",
+  "icons": {"48": "tools_small.png",
+            "128": "tools.png" },
   "permissions": ["http://*/", "https://*/"],
   "plugins": [
-    { "path": "NPAPIFileIOforChrome.plugin", "public": false }
+    { "path": "NPAPIFileIOforChrome.plugin", "public": false },
+    { "path": "npNPAPIFileIOforChrome.dll", "public": false },
+    { "path": "npNPAPIFileIOforChrome.so", "public": false },
+    { "path": "npNPAPIFileIOforChromex64.so", "public": false }
   ]
 }

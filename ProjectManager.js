@@ -12,13 +12,15 @@ ProjectManager.prototype = {
 			fs.root.getDirectory(path, {create:false}, function(dir){
 				projectType.createProject(dir,url,function(project, error){
 					self.fsRoot = fs.root;
-					project.matchedResourceMap = {};
-					if (!project.compare){
-						project.compare = function(a,b){
-							return a === b;
+					if (project){
+						project.matchedResourceMap = {};
+						if (!project.compare){
+							project.compare = function(a,b){
+								return a === b;
+							}
 						}
+						projectsByTab[tabId] = project;
 					}
-					projectsByTab[tabId] = project;
 					sendResponse({path:path, error:error});
 				});
 			});
@@ -134,15 +136,21 @@ ProjectManager.prototype = {
 			//sendResponse();
 		}
 	},
-	
+	unwatchDirectory : function(tabId, sendResponse){
+		this._unwatch(tabId);
+		sendResponse();
+	},
+	_unwatch : function(tabId){
+		var watcher = this.watchersByTab[tabId];
+		if (watcher){
+			watcher.stopWatching();
+			delete this.watchersByTab[tabId];
+		}
+	},
 	cleanUp : function(tabId){
 		if (this.projectsByTab[tabId])
 			delete this.projectsByTab[tabId];
 		  			
-		var watcher = this.watchersByTab[tabId];
-		if (watcher){
-			watcher.stopWatching();
-			delete this.watchersByTab[tabId];	
-		}
+		this._unwatch(tabId);
 	}
 }

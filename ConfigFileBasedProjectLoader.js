@@ -13,10 +13,16 @@ ProjectTypes.push(
 					config = JSON.parse(json);
 				}
 				catch(e){
-					handleError('Failed to parse JSON: ' + e.message);
+					handleError('Failed to parse tincr.json: ' + e.message);
 					return;
 				}
-				var project = new ConfigFileBasedProject(config, root, url);
+				try{
+					var project = new ConfigFileBasedProject(config, root, url);
+				}
+				catch(e){
+					handleError('Error while trying to load tincr.json: ' + e.message);
+					return;
+				}
 				callback(project, null);
 			}, function(){handleError('Unable to open ' + root.fullPath + '/tincr.json');});
 			

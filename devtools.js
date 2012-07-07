@@ -3,21 +3,48 @@ var projectState = {};
 var inspectedLocation;
 var watchPort;
 
-var loadProject = function(type, path){
+var saveProjectState = function(){
+	if (projectState.type != 'fileUrl'){
+		localStorage[inspectedLocation.origin] = JSON.stringify(projectState);
+	}
+	else{
+		var temp = {autosave: projectState.autosave, watchFiles: projectState.watchFiles};
+		localStorage[inspectedLocation.origin] = JSON.stringify(temp);
+	}
+}
+
+var loadProject = function(type, path, autosave, watchFiles){
 	checkResources();
 	registerNavListener();
 	
+	toggleWatchingFiles(watchFiles, path);
+	projectState = {type: type, path: path, autosave:autosave, watchFiles:watchFiles};
+	saveProjectState();
+};
+
+var toggleWatchingFiles = function(enable, path, callback){
+	projectState.watchFiles = enable;
+	var registerWatch = function(){
+		if (enable){
+			watchPort = chrome.extension.connect({name:path});
+			watchPort.onMessage.addListener(fileChangeListener);
+		}
+		if (callback){
+			callback();
+		}	
+	}
+	
 	if (watchPort){
 		watchPort.disconnect();
+		backgroundMsgSupport.unwatchDirectory(function(){
+			registerWatch();
+		});
 	}
-	watchPort = chrome.extension.connect({name:path});
-	watchPort.onMessage.addListener(fileChangeListener);
+	else{
+		registerWatch();
+	}
 	
-	projectState = {type: type, path: path};
-	if (type != 'fileUrl'){
-		localStorage[inspectedLocation.origin] = JSON.stringify(projectState);
-	}
-};
+}
 
 var checkLocation = function(){
 	chrome.devtools.inspectedWindow.eval('this.location', function(location, isException){
@@ -26,20 +53,30 @@ var checkLocation = function(){
 		}
 		inspectedLocation = location;
 		// file protocol is a special case
-		var type,path;
+		var type,path,temp;
 		if (location.protocol == 'file:'){
 			var pathElements = location.pathname.split("/");
 			type = 'fileUrl';
 			path = '';
+			// get the root directory of the currently viewed html page.
 			for (var i = 1; i < pathElements.length - 1; i++){
 				path = path + '/' + pathElements[i];
 			}
-					
+			if (path.charAt(0) == '/' && navigator.platform.indexOf('Win') == 0){
+				path = path.substring(1);
+			}
+			var projectStateStr = localStorage[location.origin];
+			if (projectStateStr){
+				temp = JSON.parse(projectStateStr);
+			}
+			else{
+				temp = {autosave: true, watchFiles: true};
+			}
 		}
 		else{
 			var projectStateStr = localStorage[location.origin];
 			if (projectStateStr){
-				var temp = JSON.parse(projectStateStr);
+				temp = JSON.parse(projectStateStr);
 				if (temp.type != 'fileUrl'){
 					type = temp.type;
 					path = temp.path;
@@ -47,15 +84,21 @@ var checkLocation = function(){
 			}
 		}
 		if (type && path && projectState.path != path){
-			backgroundMsgSupport.loadProject(type, path, inspectedLocation.origin, function(){
-				loadProject(type, path);
+			backgroundMsgSupport.loadProject(type, path, inspectedLocation.origin, function(data){
+				if (data.error){
+					logError(data.error);
+				}
+				else{
+					loadProject(type, path, temp.autosave, temp.watchFiles);
+				}
 			});
 		}
 	});
 }
 checkLocation();
+toggleLogging(localStorage['logging'] === 'true');
 
-chrome.devtools.panels.create('Local Project', 'icon.png', 'editorpanel.html', function(panel){
+chrome.devtools.panels.create(' Tincr ', 'icon.png', 'editorpanel.html', function(panel){
 	var windowInjector = function(panelWindow){
 		window.editorPanelWindow = panelWindow;
 		panelWindow.devtoolsWindow = window;

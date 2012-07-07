@@ -11,6 +11,9 @@ FileUrlProject.prototype = {
 			else{
 				path = url.substring(7);
 			}
+			if (navigator.platform.indexOf('Win') == 0 && path.charAt(0) == '/'){
+				path = path.substring(1);
+			}
 			this.projectUrls[path] = url;
 			return path;
 		}
@@ -20,7 +23,7 @@ FileUrlProject.prototype = {
 		// It's not necessary to cache the urls since it's just a matter of tacking on the 'file://' 
 		// in the front but I don't want to post an update 
 		// to the devtools panel unless I know it's an actual project url.
-		var url = this.projectUrls[path];
+		var url = this.projectUrls[path.replace('\\', '/')];
 		if (url){
 			return[url];
 		}

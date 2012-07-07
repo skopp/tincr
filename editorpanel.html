@@ -1,5 +1,6 @@
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="aui.css" />
 	<link rel="stylesheet" type="text/css" href="editorpanel.css" />
 
 	<script src="zepto1.0rc1.js"></script>
@@ -15,6 +16,10 @@
 			if (projectState.type == 'fileUrl'){
 				$('#project-type').attr('disabled', 'true');
 				$('#native-browse').attr('disabled', 'true');
+				
+				$('#file-select').hide();
+				$('#auto-refresh').hide();
+				$('#auto-save').hide();
 			}
 			else if (projectState.type){
 				var typeSelect = document.getElementById('project-type');
@@ -23,16 +28,32 @@
 				
 				for (var i = 0; i < projectTypes.length; i++){
 					if (projectTypes[i].key === projectState.type){
-						typeSelect.selectedIndex = i;
+						typeSelect.value = String(i);
 						break;
 					}
 				}
-				$('#local-file-path').text(projectState.path);
+				$('#local-file-path').text(projectState.path).show();
+				$('#toggle-watch')[0].checked = projectState.watchFiles;
+				$('#toggle-autosave')[0].checked = projectState.autosave;
+				
+				$('#file-select').show();
+				$('#auto-refresh').show();
+				$('#auto-save').show();
+				
+				$('#load-error').hide();
+				$('#error-img').hide();
+				$('#success-img').show();
+				$('#load-success').show();
 			}
+			
+			var loggingEnabled = devtoolsWindow.localStorage['logging'] === 'true';
+			toggleLogging(loggingEnabled);
+			$('#toggle-logging')[0].checked = loggingEnabled;
 			
 		}
 		
 		var initUI = function(){
+		
 			var typeSelect = document.getElementById('project-type');
 			
 			backgroundMsgSupport.getProjectTypes(function(types){
@@ -44,45 +65,102 @@
 				checkProjectState();
 			});
 			$(typeSelect).on('change', function(e){
-				var index = typeSelect.selectedIndex;
+				var index = Number(typeSelect.value);
 				var projectType = projectTypes[index];
-				if (projectType.locationType = 'local'){
-					var fileSelect = document.getElementById('file-select');
-					fileSelect.style.display = '';
+				if (projectType.locationType == 'local'){
+					$('#file-select').show();
 				}
 			});
 			$('#native-browse').on('click', function(e){
-				var index = typeSelect.selectedIndex;
+				var index = Number(typeSelect.value);
 				backgroundMsgSupport.launchFileSelect(index, window.devtoolsWindow.inspectedLocation.origin, function(result){
 					if (result.path && result.path.length){
-						$('#local-file-path').text(result.path);
+						$('#local-file-path').text(result.path).show();
 						if (result.error){
 							logError(result.error);
+							$('#load-error').text(result.error).show();
+							$('#error-img').show();
+							$('#success-img').hide();
+							$('#load-success').hide();
 						}
 						else{
 							var projectType = projectTypes[index];
-							window.devtoolsWindow.loadProject(projectType.key, result.path);
+							window.devtoolsWindow.loadProject(projectType.key, result.path, true, true);
+							$('#toggle-autosave')[0].checked = true;
+							$('#toggle-watch')[0].checked = true;
+							$('#auto-refresh').show();
+				            $('#auto-save').show();
+				            
+				            $('#load-error').hide();
+							$('#error-img').hide();
+							$('#success-img').show();
+							$('#load-success').show();
 						}
 					}
 				});
+				return false;
 			});
+			$('#toggle-watch').on('change', function(e){
+				var path = $('#local-file-path').text();
+				if (path && path.length){
+					this.disabled=true;
+					var self = this;
+					window.devtoolsWindow.toggleWatchingFiles(this.checked, path, function(){
+						self.disabled = false;
+						window.devtoolsWindow.saveProjectState();
+					});
+				}
+			});
+			$('#toggle-autosave').on('change', function(e){
+				if (window.devtoolsWindow.projectState){
+					window.devtoolsWindow.projectState.autosave = this.checked;
+				}
+				window.devtoolsWindow.saveProjectState();
+			});
+			$('#toggle-logging').on('change', function(e){
+				devtoolsWindow.localStorage['logging'] = '' + this.checked;
+				toggleLogging(this.checked);
+				devtoolsWindow.toggleLogging(this.checked);
+			});
+			
 		};
 	</script>
 </head>
 <body>
 	<div id="project-select-form">
-		<p>
-			<fieldset>
+		<form class="aui">
+			 <h2>Configuration</h2>
+		 <fieldset>
+			<div class="field-group">
 				<label>Project Type:</label>
-				<select id="project-type"></select>
-			</fieldset>
-		</p>
-		<p id="file-select" style="display:none">
-			<fieldset>
-				<label>Root Directory</label><label id="local-file-path"></label>
-				<button id="native-browse">Browse</button>
-			</fieldset>
-		</p>
+				<select id="project-type">
+					<option value="-1" selected="selected">Choose...</option>
+				</select>
+			</div>
+			<div class="field-group" id="file-select" style="display:none">
+				<label>Root Directory:</label><span id="local-file-path" style="display:none"></span>
+				<button id="native-browse">Browse</button><img id="error-img" style="display:none" src="error.png"/><img id="success-img" style="display:none" src="success.png"/>
+				<div id="load-error" class="description" style="display:none"></div>
+				<div id="load-success" class="description" style="display:none">Project loaded successfully</div>
+			</div>
+			<div class="field-group" id="auto-refresh" style="display:none">
+				<label>Auto-Refresh</label>
+				<input type="checkbox" id="toggle-watch"/>
+				<div class="description">Reload file system changes in the background</div>
+			</div>
+			<div class="field-group" id="auto-save" style="display:none">
+				<label>Auto-Save</label>
+				<input type="checkbox" id="toggle-autosave"/>
+				<div class="description">Save changes from devtools to the file system</div>
+			</div>
+		</fieldset>
+		    <h2>Flags</h2>
+			<div class="field-group">
+				<label>Enable Logging</label>
+				<input type="checkbox" id="toggle-logging"/>
+				<div class="description">Logs Tincr errors and messages to the devtools console</div>
+			</div>
+		</form>
 	</div>
 </body>
 </html>

@@ -54,13 +54,14 @@ var registerNavListener = function(){
 	navListenerRegistered = true;
 }
 chrome.devtools.inspectedWindow.onResourceContentCommitted.addListener(function(resource, content){
-	if (matchedUrls[resource.url] && !recentUpdateHandler.isRecentUpdate(resource.url)){
+	if (projectState.autosave && matchedUrls[resource.url] && !recentUpdateHandler.isRecentUpdate(resource.url)){
 		backgroundMsgSupport.updateResource(resource.url, content);
 	}
 });
 var doResourceUpdate = function(resource, newContent){
 	recentUpdateHandler.addRecentUpdate(resource.url);
 	resource.setContent(newContent, true);
+	logMessage('Auto-Reloaded ' + resource.url);
 };
 var fileChangeListener = function(data){
 	// resource content seems to be naively cached. No way to get the most recent content without
