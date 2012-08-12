@@ -2,11 +2,7 @@
 <html>
   <head>
     <title>Background Page</title>
-    	<script>
-    		ProjectTypes = [];
-    		var projectsByTab= {};
-    		var watchersByTab={};
-    	</script>
+    	<script src="backgroundInit.js"></script>
     	<script src="file_utils.js"></script>
     	<script src="ConfigFileBasedProject.js"></script>
 		<script src="RubyOnRailsProject.js"></script>
@@ -19,56 +15,9 @@
 		<script src="ConfigFileBasedProjectLoader.js"></script>
 		<script src="ProjectManager.js"></script>
     	<embed type="application/x-npapifileioforchrome" id="pluginId" style="position:absolute; top:0px;left:-10000px;width:5px;height:5px;">
-
-		<script>
-		  window.nativeFileSupport = document.getElementById("pluginId");
-		</script>
+		<script src="nativeSupport.js"></script>
 		<script src="FauxFilesystem.js"></script>
-		<script>
-		  var projectManager = new ProjectManager();
-		  chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-		  		
-				if (request.key == 'ProjectTypes'){
-					//var cleanResponse = [];
-					//for (var i = 0; i < ProjectTypes.length){
-					//	cleanResponse.push({name: ProjectTypes[i].name, locationType: ProjectTypes[i].locationType});
-					//}
-					sendResponse(ProjectTypes);
-				}
-				else if (request.key == 'launchFileSelect'){
-					projectManager.launchFileSelect(sender.tab.id, request.url, request.index, sendResponse);
-				}
-				else if (request.key == 'checkResources'){
-					projectManager.checkResources(sender.tab.id, request.resources, sendResponse);
-				}
-				else if (request.key == 'checkResourceContent'){
-					projectManager.checkResourceContent(sender.tab.id, request.url, request.content, sendResponse);
-				}
-				else if (request.key == 'updateResource'){
-				    projectManager.updateResource(sender.tab.id, request.url, request.content, sendResponse);
-				}
-				else if (request.key == 'pageChanged'){
-					projectManager.resetProject(sender.tab.id, sendResponse);
-				}
-				else if (request.key == 'loadProject'){
-					projectManager.loadProject(sender.tab.id, request.type, request.path, request.url, sendResponse);
-				}
-				else if (request.key == 'unwatchDirectory'){
-					projectManager.unwatchDirectory(sender.tab.id, sendResponse);
-				}
-				else{
-					sendResponse({});
-				}
-				
-		  });
-		  chrome.extension.onConnect.addListener(function(port){
-		  	projectManager.watchDirectory(port);
-		  });
-		  chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-		  		projectManager.cleanUp(tabId);
-		  });
-		</script>
-
+		<script src="background.js"></script>
   </head>
   <body>
   </body>

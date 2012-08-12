@@ -1,0 +1,1 @@
+window.nativeFileSupport = document.getElementById("pluginId");
