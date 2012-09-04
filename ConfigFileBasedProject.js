@@ -39,7 +39,7 @@ var ConfigFileBasedProject = function(config, root, url){
 	this.url = url;
 	if (isWin){
 		this.replaceSlashes = function(str){
-			return str.replace('/', '\\');
+			return str.replace(/\//g, '\\');
 		}
 	}
 	else{

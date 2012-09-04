@@ -2,6 +2,10 @@ Tincr
 =====
 This is the source code for the [Tincr Chrome Extension](http://tin.cr). The docs are hosted [here](http://tin.cr/docs.html).
 
+Getting Support
+=======
+Please seek help on the [Tincr google group](https://groups.google.com/forum/#!forum/tincr-for-chrome-devtools). I actively monitor this group. It's better than trying to contact me directly since other people may be experiencing the same problem and I can help everyone at once. 
+
 Building
 ======
 Tincr is a chrome extension. You can simply checkout the source code and load it as an unpacked extension in Chrome. This will 

@@ -30,7 +30,7 @@ UrlToDirectoryMappedProject.prototype = {
 			if (url.indexOf(routes[i].from) == 0){
 				var path = url.replace(routes[i].from, routes[i].to);
 				if (this.isWin){
-					path = path.replace('/', '\\');
+					path = path.replace(/\//g, '\\');
 				}
 				this.projectUrls[path] = url;
 				return path;
