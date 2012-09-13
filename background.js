@@ -1,3 +1,4 @@
+$.ajaxSettings.accepts.text = "*/*"
 var projectManager = new ProjectManager();
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     
