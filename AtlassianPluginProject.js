@@ -29,7 +29,8 @@ AtlassianPluginProject.prototype = {
 			try{
 				var p = new DOMParser();
 				var pom = p.parseFromString(pomText, "text/xml");
-				var groupId = pom.querySelector('project > groupId').textContent;
+				var groupElement = pom.querySelector('project > groupId') || pom.querySelector('project > parent > groupId');
+				var groupId = groupElement.textContent;
 				var artifactId = pom.querySelector('project > artifactId').textContent;
 			}
 			catch(e){
